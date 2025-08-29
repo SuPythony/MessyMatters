@@ -252,7 +252,7 @@ class _MenuState extends State<Menu> {
                     child: DefaultTabController(
                       length: 4,
                       initialIndex: // Open menu of ongoing/upcoming meal based on current time
-                          date != null && DateTime.tryParse(date!)!.isAfter(DateTime.now())
+                      date != null && DateTime.tryParse(date!)!.isAfter(DateTime.now())
                           ? 0
                           : DateTime.now().isBefore(
                               DateTime.tryParse(

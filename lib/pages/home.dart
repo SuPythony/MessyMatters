@@ -161,9 +161,7 @@ class _HomeState extends State<Home> {
                                 ),
                                 leading: Column(
                                   mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Icon(Icons.restaurant_menu, color: Colors.green),
-                                  ],
+                                  children: [Icon(Icons.restaurant_menu, color: Colors.green)],
                                 ),
                                 subtitle: const Text('View mess menu'),
                                 trailing: const Icon(Icons.navigate_next),
@@ -190,9 +188,7 @@ class _HomeState extends State<Home> {
                                 ),
                                 leading: Column(
                                   mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Icon(Icons.list, color: Colors.green),
-                                  ],
+                                  children: [Icon(Icons.list, color: Colors.green)],
                                 ),
                                 subtitle: const Text('Manage your registrations'),
                                 trailing: const Icon(Icons.navigate_next),
@@ -219,9 +215,7 @@ class _HomeState extends State<Home> {
                                 ),
                                 leading: Column(
                                   mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Icon(Icons.settings, color: Colors.green),
-                                  ],
+                                  children: [Icon(Icons.settings, color: Colors.green)],
                                 ),
                                 subtitle: const Text('Update your settings'),
                                 trailing: const Icon(Icons.navigate_next),

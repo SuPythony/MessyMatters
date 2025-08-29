@@ -87,7 +87,6 @@ class _RegState extends State<Reg> {
     setState(() {});
   }
 
-
   /// Switch to next week
   void nextWeek() async {
     startDate = DateTime.tryParse(startDate)!.add(Duration(days: 7)).toString().split(" ")[0];
@@ -701,7 +700,8 @@ class _RegState extends State<Reg> {
                           ElevatedButton(
                             onPressed: regOver
                                 ? null
-                                : () { // Can update if registration window not over
+                                : () {
+                                    // Can update if registration window not over
                                     if (curVal != null) {
                                       register(meal, curVal!, true);
                                     }

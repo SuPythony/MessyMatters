@@ -12,7 +12,8 @@ import 'package:mess_iiit/pages/settings.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  PlatformDispatcher.instance.onError = (error, _) { // Not connected to campus Wi-Fi or VPN
+  PlatformDispatcher.instance.onError = (error, _) {
+    // Not connected to campus Wi-Fi or VPN
     if (error is ClientException) {
       Fluttertoast.showToast(
         msg: "Please connect to the campus network",

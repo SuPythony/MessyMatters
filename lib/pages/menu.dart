@@ -255,21 +255,15 @@ class _MenuState extends State<Menu> {
                       date != null && DateTime.tryParse(date!)!.isAfter(DateTime.now())
                           ? 0
                           : DateTime.now().isBefore(
-                              DateTime.tryParse(
-                                DateTime.now().toString(),
-                              )!.copyWith(hour: 9, minute: 30),
+                              DateTime.now().copyWith(hour: 9, minute: 30, second: 0),
                             )
                           ? 0
                           : DateTime.now().isBefore(
-                              DateTime.tryParse(
-                                DateTime.now().toString(),
-                              )!.copyWith(hour: 14, minute: 30),
+                              DateTime.now().copyWith(hour: 14, minute: 30, second: 0),
                             )
                           ? 1
                           : DateTime.now().isBefore(
-                              DateTime.tryParse(
-                                DateTime.now().toString(),
-                              )!.copyWith(hour: 18, minute: 0),
+                              DateTime.now().copyWith(hour: 18, minute: 0, second: 0),
                             )
                           ? 2
                           : 3,

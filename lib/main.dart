@@ -34,7 +34,7 @@ class MessIIIT extends StatelessWidget {
     return MaterialApp(
       title: 'MessyMatters',
       theme: ThemeData(colorScheme: ColorScheme.fromSeed(seedColor: Colors.green)),
-      initialRoute: '/home',
+      initialRoute: '/auth',
       routes: {
         '/home': (_) => Home(),
         '/auth': (_) => AuthCheck(),

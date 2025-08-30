@@ -823,7 +823,7 @@ class _RegState extends State<Reg> {
     return SingleChildScrollView(child: Column(children: rows));
   }
 
-  /// Initialization ans setup
+  /// Initialization and setup
   void init() async {
     final prefs = await SharedPreferences.getInstance();
     authKey = prefs.getString('authKey');

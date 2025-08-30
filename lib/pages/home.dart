@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:mess_iiit/components/drawer.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -173,6 +174,7 @@ class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      drawer: SideDrawer(),
       appBar: AppBar(
         title: Text('IIIT Mess Portal'),
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
@@ -181,9 +183,12 @@ class _HomeState extends State<Home> {
             onPressed: () {
               showAboutDialog(
                 context: context,
+                applicationIcon: Image.asset('images/icon.png', scale: 17),
+                applicationName: 'MessyMatters',
+                applicationVersion: '1.0.0',
                 children: [
                   SelectableText(
-                    'Made by Sumanyu Aggarwal. Source Code:\nhttps://github.com/SuPythony/MessyMatters',
+                    'Made by Sumanyu Aggarwal.\n\nSource Code:\nhttps://github.com/SuPythony/MessyMatters',
                   ),
                 ],
               );
@@ -241,7 +246,6 @@ class _HomeState extends State<Home> {
                           child: Card(
                             elevation: 5,
                             child: InkWell(
-                              splashColor: Colors.grey,
                               onTap: () {
                                 Navigator.pushNamed(context, '/menu');
                               },
@@ -268,7 +272,6 @@ class _HomeState extends State<Home> {
                           child: Card(
                             elevation: 5,
                             child: InkWell(
-                              splashColor: Colors.grey,
                               onTap: () {
                                 Navigator.pushNamed(context, '/reg');
                               },
@@ -295,7 +298,6 @@ class _HomeState extends State<Home> {
                           child: Card(
                             elevation: 5,
                             child: InkWell(
-                              splashColor: Colors.grey,
                               onTap: () {
                                 Navigator.pushNamed(context, '/settings');
                               },

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:mess_iiit/components/drawer.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Menu extends StatefulWidget {
@@ -18,6 +19,7 @@ class _MenuState extends State<Menu> {
   String? day;
   final days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
   List<dynamic>? menu;
+  bool drawerOpen = false;
 
   /// Fetch the menu from the API
   Future<List> getMenu() async {
@@ -149,180 +151,199 @@ class _MenuState extends State<Menu> {
   }
 
   @override
+  void dispose() {
+    dateContr.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Menu'),
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-      ),
-      body: SafeArea(
-        child: Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(10.0),
-              child: Row(
-                children: [
-                  IconButton(
-                    onPressed:
-                        date != null &&
-                            DateUtils.isSameDay(DateTime.tryParse(date!), DateTime.now())
-                        ? null
-                        : () {
-                            final newDate = DateTime.tryParse(date!)?.subtract(Duration(days: 1));
-                            setState(() {
-                              day = days[newDate!.weekday - 1];
-                              date = newDate.toString().split(" ")[0];
-                              dateContr.text =
-                                  "$day, ${newDate.day}/${newDate.month}/${newDate.year}";
-                            });
-                            updateMenus();
-                          },
-                    icon: Icon(Icons.arrow_left),
-                    color: Colors.green,
-                    disabledColor: Theme.of(context).colorScheme.inversePrimary,
-                    iconSize: 25,
-                  ), // Prev day button
-                  Expanded(
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        SizedBox(
-                          width: MediaQuery.of(context).size.width / 2,
-                          child: TextField(
-                            scrollPhysics: ScrollPhysics(),
-                            readOnly: true,
-                            controller: dateContr,
-                            textAlign: TextAlign.center,
-                          ),
-                        ),
-                        IconButton(
-                          onPressed: () async {
-                            final selectedDate = await showDatePicker(
-                              context: context,
-                              firstDate: DateTime.now(),
-                              lastDate: DateTime(2050),
-                              initialDate: DateTime.tryParse(date!),
-                            );
-                            if (selectedDate != null) {
+    return PopScope(
+      canPop: false,
+      // Goto the home page when user presses the back button
+      onPopInvokedWithResult: (didPop, result) {
+        if (drawerOpen) {
+          Navigator.pop(context);
+          return;
+        }
+        Navigator.pushNamedAndRemoveUntil(context, '/home', (_) => false);
+      },
+      child: Scaffold(
+        drawer: SideDrawer(),
+        onDrawerChanged: (isOpen) => drawerOpen = isOpen,
+        appBar: AppBar(
+          title: Text('Menu'),
+          backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        ),
+        body: SafeArea(
+          child: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(10.0),
+                child: Row(
+                  children: [
+                    IconButton(
+                      onPressed:
+                          date != null &&
+                              DateUtils.isSameDay(DateTime.tryParse(date!), DateTime.now())
+                          ? null
+                          : () {
+                              final newDate = DateTime.tryParse(date!)?.subtract(Duration(days: 1));
                               setState(() {
-                                day = days[selectedDate!.weekday - 1];
-                                date = selectedDate.toString().split(" ")[0];
+                                day = days[newDate!.weekday - 1];
+                                date = newDate.toString().split(" ")[0];
                                 dateContr.text =
-                                    "$day, ${selectedDate.day}/${selectedDate.month}/${selectedDate.year}";
+                                    "$day, ${newDate.day}/${newDate.month}/${newDate.year}";
                               });
                               updateMenus();
-                            }
-                          },
-                          icon: Icon(Icons.calendar_month),
-                        ),
-                      ],
-                    ),
-                  ), // Date-picker
-                  IconButton(
-                    onPressed: date != null && DateTime.tryParse(date!)?.year == 2050
-                        ? null
-                        : () {
-                            final newDate = DateTime.tryParse(date!)?.add(Duration(days: 1));
-                            setState(() {
-                              day = days[newDate!.weekday - 1];
-                              date = newDate.toString().split(" ")[0];
-                              dateContr.text =
-                                  "$day, ${newDate.day}/${newDate.month}/${newDate.year}";
-                            });
-                            updateMenus();
-                          },
-                    icon: Icon(Icons.arrow_right),
-                    color: Colors.green,
-                    disabledColor: Theme.of(context).colorScheme.inversePrimary,
-                    iconSize: 25,
-                  ), // Next day button
-                ],
-              ),
-            ),
-            SizedBox(height: 10),
-            loading
-                ? Expanded(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [CircularProgressIndicator()],
-                    ),
-                  )
-                : Expanded(
-                    child: DefaultTabController(
-                      length: 4,
-                      initialIndex: // Open menu of ongoing/upcoming meal based on current time
-                      date != null && DateTime.tryParse(date!)!.isAfter(DateTime.now())
-                          ? 0
-                          : DateTime.now().isBefore(
-                              DateTime.now().copyWith(hour: 9, minute: 30, second: 0),
-                            )
-                          ? 0
-                          : DateTime.now().isBefore(
-                              DateTime.now().copyWith(hour: 14, minute: 30, second: 0),
-                            )
-                          ? 1
-                          : DateTime.now().isBefore(
-                              DateTime.now().copyWith(hour: 18, minute: 0, second: 0),
-                            )
-                          ? 2
-                          : 3,
-                      child: Column(
+                            },
+                      icon: Icon(Icons.arrow_left),
+                      color: Colors.green,
+                      disabledColor: Theme.of(context).colorScheme.inversePrimary,
+                      iconSize: 25,
+                    ), // Prev day button
+                    Expanded(
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           SizedBox(
-                            height: 50,
-                            child: TabBar(
-                              dividerHeight: 50,
-                              dividerColor: Theme.of(context).colorScheme.surface,
-                              indicatorSize: TabBarIndicatorSize.label,
-                              tabs: [
-                                Text(
-                                  "Breakfast",
-                                  style: TextStyle(
-                                    fontSize: MediaQuery.of(context).size.width / 28,
-                                  ),
-                                ),
-                                Text(
-                                  "Lunch",
-                                  style: TextStyle(
-                                    fontSize: MediaQuery.of(context).size.width / 28,
-                                  ),
-                                ),
-                                Text(
-                                  "Snacks",
-                                  style: TextStyle(
-                                    fontSize: MediaQuery.of(context).size.width / 28,
-                                  ),
-                                ),
-                                Text(
-                                  "Dinner",
-                                  style: TextStyle(
-                                    fontSize: MediaQuery.of(context).size.width / 28,
-                                  ),
-                                ),
-                              ],
+                            width: MediaQuery.of(context).size.width / 2,
+                            child: TextField(
+                              scrollPhysics: ScrollPhysics(),
+                              readOnly: true,
+                              controller: dateContr,
+                              textAlign: TextAlign.center,
                             ),
                           ),
-                          SizedBox(height: 10),
-                          Expanded(
-                            child: TabBarView(
-                              children: ["breakfast", "lunch", "snacks", "dinner"]
-                                  .map(
-                                    (type) => ListView.builder(
-                                      itemBuilder: (_, index) {
-                                        return buildSingleMenu(menu?[index], type);
-                                      },
-                                      itemCount: menu?.length,
-                                    ),
-                                  )
-                                  .toList(),
-                            ),
+                          IconButton(
+                            onPressed: () async {
+                              final selectedDate = await showDatePicker(
+                                context: context,
+                                firstDate: DateTime.now(),
+                                lastDate: DateTime(2050),
+                                initialDate: DateTime.tryParse(date!),
+                              );
+                              if (selectedDate != null) {
+                                setState(() {
+                                  day = days[selectedDate!.weekday - 1];
+                                  date = selectedDate.toString().split(" ")[0];
+                                  dateContr.text =
+                                      "$day, ${selectedDate.day}/${selectedDate.month}/${selectedDate.year}";
+                                });
+                                updateMenus();
+                              }
+                            },
+                            icon: Icon(Icons.calendar_month),
                           ),
                         ],
                       ),
+                    ), // Date-picker
+                    IconButton(
+                      onPressed: date != null && DateTime.tryParse(date!)?.year == 2050
+                          ? null
+                          : () {
+                              final newDate = DateTime.tryParse(date!)?.add(Duration(days: 1));
+                              setState(() {
+                                day = days[newDate!.weekday - 1];
+                                date = newDate.toString().split(" ")[0];
+                                dateContr.text =
+                                    "$day, ${newDate.day}/${newDate.month}/${newDate.year}";
+                              });
+                              updateMenus();
+                            },
+                      icon: Icon(Icons.arrow_right),
+                      color: Colors.green,
+                      disabledColor: Theme.of(context).colorScheme.inversePrimary,
+                      iconSize: 25,
+                    ), // Next day button
+                  ],
+                ),
+              ),
+              SizedBox(height: 10),
+              loading
+                  ? Expanded(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [CircularProgressIndicator()],
+                      ),
+                    )
+                  : Expanded(
+                      child: DefaultTabController(
+                        length: 4,
+                        initialIndex: // Open menu of ongoing/upcoming meal based on current time
+                        date != null && DateTime.tryParse(date!)!.isAfter(DateTime.now())
+                            ? 0
+                            : DateTime.now().isBefore(
+                                DateTime.now().copyWith(hour: 9, minute: 30, second: 0),
+                              )
+                            ? 0
+                            : DateTime.now().isBefore(
+                                DateTime.now().copyWith(hour: 14, minute: 30, second: 0),
+                              )
+                            ? 1
+                            : DateTime.now().isBefore(
+                                DateTime.now().copyWith(hour: 18, minute: 0, second: 0),
+                              )
+                            ? 2
+                            : 3,
+                        child: Column(
+                          children: [
+                            SizedBox(
+                              height: 50,
+                              child: TabBar(
+                                dividerHeight: 50,
+                                dividerColor: Theme.of(context).colorScheme.surface,
+                                indicatorSize: TabBarIndicatorSize.label,
+                                tabs: [
+                                  Text(
+                                    "Breakfast",
+                                    style: TextStyle(
+                                      fontSize: MediaQuery.of(context).size.width / 28,
+                                    ),
+                                  ),
+                                  Text(
+                                    "Lunch",
+                                    style: TextStyle(
+                                      fontSize: MediaQuery.of(context).size.width / 28,
+                                    ),
+                                  ),
+                                  Text(
+                                    "Snacks",
+                                    style: TextStyle(
+                                      fontSize: MediaQuery.of(context).size.width / 28,
+                                    ),
+                                  ),
+                                  Text(
+                                    "Dinner",
+                                    style: TextStyle(
+                                      fontSize: MediaQuery.of(context).size.width / 28,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            SizedBox(height: 10),
+                            Expanded(
+                              child: TabBarView(
+                                children: ["breakfast", "lunch", "snacks", "dinner"]
+                                    .map(
+                                      (type) => ListView.builder(
+                                        itemBuilder: (_, index) {
+                                          return buildSingleMenu(menu?[index], type);
+                                        },
+                                        itemCount: menu?.length,
+                                      ),
+                                    )
+                                    .toList(),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
                     ),
-                  ),
-          ],
+            ],
+          ),
         ),
       ),
     );

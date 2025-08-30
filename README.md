@@ -2,7 +2,7 @@
 
 A client for the IIIT-H mess portal.
 
-Download the [APK](https://drive.google.com/file/d/141BuQJsFlbvthqlEvqK22YVwRXss2eOJ/view?usp=sharing)
+Download the [APK](https://drive.google.com/file/d/1BvNPNiQ5kAhYCAV2Wl5dFTB6TZKxyo3a/view?usp=sharing)
 
 ## Setup
 
@@ -19,8 +19,10 @@ Download the [APK](https://drive.google.com/file/d/141BuQJsFlbvthqlEvqK22YVwRXss
 3. The `onboarding` page allows users to enter their auth key. They can either scan the QR code or enter it manually.
 4. The `home` page has navigation options to all the other pages and shows users their upcoming or ongoing registration.
 5. The `menu` page displays the selected day's menu. Users can select a date and view the respective menu.
-6. The `reg` page is where all the registrations happen. Users can view and manage their regstrations, as well as see the status of previous meals. They can also provide feedback on availed meals.
+6. The `reg` page is where all the registrations happen. Users can view and manage their registrations, as well as see the status of previous meals. They can also provide feedback on availed meals.
 7. On the `settings` page, users can update their preferences as well as change their auth key.
+8. The [pages](https://github.com/SuPythony/MessyMatters/tree/main/lib/pages) directory contains the all the pages of the app.
+9. The [components](https://github.com/SuPythony/MessyMatters/tree/main/lib/components) directory contains components common across all pages.
 
 ## Assumptions
 

@@ -57,6 +57,12 @@ class _OnboardingState extends State<Onboarding> {
   }
 
   @override
+  void dispose() {
+    contr.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return showScanner
         ? PopScope(
@@ -89,9 +95,12 @@ class _OnboardingState extends State<Onboarding> {
                     onPressed: () {
                       showAboutDialog(
                         context: context,
+                        applicationIcon: Image.asset('images/icon.png', scale: 17),
+                        applicationName: 'MessyMatters',
+                        applicationVersion: '1.0.0',
                         children: [
                           SelectableText(
-                            'Made by Sumanyu Aggarwal. Source Code:\nhttps://github.com/SuPythony/MessyMatters',
+                            'Made by Sumanyu Aggarwal.\n\nSource Code:\nhttps://github.com/SuPythony/MessyMatters',
                           ),
                         ],
                       );

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
+import 'package:mess_iiit/components/drawer.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Reg extends StatefulWidget {
@@ -25,6 +26,8 @@ class _RegState extends State<Reg> {
   final days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
   final messes = ['Yuktahar', 'Palash', 'Kadamba (Veg)', 'Kadmaba (Non-Veg)'];
   final values = ['yuktahar', 'palash', 'kadamba-veg', 'kadamba-nonveg'];
+  final scroll = ScrollController();
+  bool drawerOpen = false;
 
   /// Capitalize given string
   String capt(String s) {
@@ -85,6 +88,7 @@ class _RegState extends State<Reg> {
     endDate = DateTime.tryParse(startDate)!.add(Duration(days: 6)).toString().split(" ")[0];
     regs = await getRegs();
     setState(() {});
+    scroll.animateTo(0, duration: Duration(milliseconds: 500), curve: Curves.easeInOut);
   }
 
   /// Switch to next week
@@ -96,6 +100,7 @@ class _RegState extends State<Reg> {
     }
     regs = await getRegs();
     setState(() {});
+    scroll.animateTo(0, duration: Duration(milliseconds: 500), curve: Curves.easeInOut);
   }
 
   /// Register for a meal
@@ -820,7 +825,10 @@ class _RegState extends State<Reg> {
         );
       }
     }
-    return SingleChildScrollView(child: Column(children: rows));
+    return SingleChildScrollView(
+      controller: scroll,
+      child: Column(children: rows),
+    );
   }
 
   /// Initialization and setup
@@ -851,70 +859,93 @@ class _RegState extends State<Reg> {
   }
 
   @override
+  void dispose() {
+    contr.dispose();
+    scroll.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Registrations'),
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-      ),
-      body: SafeArea(
-        child: loading
-            ? Center(child: CircularProgressIndicator())
-            : Column(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.all(10),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          startDate,
-                          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                        ),
-                        Text(' - ', style: TextStyle(fontSize: 20)),
-                        Text(endDate!, style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-                      ],
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(8),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: [
-                        ElevatedButton(
-                          onPressed: prevWeek,
-                          style: ElevatedButton.styleFrom(
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.all(Radius.circular(5)),
-                            ),
-                            foregroundColor: Colors.white,
-                            backgroundColor: Colors.green,
-                            disabledBackgroundColor: Theme.of(context).colorScheme.inversePrimary,
-                            disabledForegroundColor: Colors.white,
+    return PopScope(
+      canPop: false,
+      // Goto the home page when user presses the back button
+      onPopInvokedWithResult: (didPop, result) {
+        if (drawerOpen) {
+          Navigator.pop(context);
+          return;
+        }
+        Navigator.pushNamedAndRemoveUntil(context, '/home', (_) => false);
+      },
+      child: Scaffold(
+        drawer: SideDrawer(),
+        onDrawerChanged: (isOpen) => drawerOpen = isOpen,
+        appBar: AppBar(
+          title: Text('Registrations'),
+          backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        ),
+        body: SafeArea(
+          child: loading
+              ? Center(child: CircularProgressIndicator())
+              : Column(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(10),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            startDate,
+                            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                           ),
-                          child: Text('Previous Week'),
-                        ),
-                        ElevatedButton(
-                          onPressed: endDate == maxDate ? null : nextWeek,
-                          style: ElevatedButton.styleFrom(
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.all(Radius.circular(5)),
-                            ),
-                            foregroundColor: Colors.white,
-                            backgroundColor: Colors.green,
-                            disabledBackgroundColor: Theme.of(context).colorScheme.inversePrimary,
-                            disabledForegroundColor: Colors.white,
+                          Text(' - ', style: TextStyle(fontSize: 20)),
+                          Text(
+                            endDate!,
+                            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                           ),
-                          child: Text('Next Week'),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
-                  ),
-                  Expanded(
-                    child: Padding(padding: const EdgeInsets.all(10), child: buildRegs()),
-                  ),
-                ],
-              ),
+                    Padding(
+                      padding: const EdgeInsets.all(8),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                          ElevatedButton(
+                            onPressed: prevWeek,
+                            style: ElevatedButton.styleFrom(
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.all(Radius.circular(5)),
+                              ),
+                              foregroundColor: Colors.white,
+                              backgroundColor: Colors.green,
+                              disabledBackgroundColor: Theme.of(context).colorScheme.inversePrimary,
+                              disabledForegroundColor: Colors.white,
+                            ),
+                            child: Text('Previous Week'),
+                          ),
+                          ElevatedButton(
+                            onPressed: endDate == maxDate ? null : nextWeek,
+                            style: ElevatedButton.styleFrom(
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.all(Radius.circular(5)),
+                              ),
+                              foregroundColor: Colors.white,
+                              backgroundColor: Colors.green,
+                              disabledBackgroundColor: Theme.of(context).colorScheme.inversePrimary,
+                              disabledForegroundColor: Colors.white,
+                            ),
+                            child: Text('Next Week'),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Expanded(
+                      child: Padding(padding: const EdgeInsets.all(10), child: buildRegs()),
+                    ),
+                  ],
+                ),
+        ),
       ),
     );
   }

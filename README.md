@@ -2,7 +2,7 @@
 
 A client for the IIIT-H mess portal.
 
-Download the [APK](https://drive.google.com/file/d/1BvNPNiQ5kAhYCAV2Wl5dFTB6TZKxyo3a/view?usp=sharing)
+Download the [APK](https://drive.google.com/file/d/1gpeqNbMtuQ0kkdofXtbBmdfQ8X-UauDQ/view?usp=sharing)
 
 ## Setup
 
@@ -27,5 +27,4 @@ Download the [APK](https://drive.google.com/file/d/1BvNPNiQ5kAhYCAV2Wl5dFTB6TZKx
 ## Assumptions
 
 1. If the user has cancelled a meal, to re-register at a different mess, they have to uncancel and then change the mess.
-2. All mess registration and mess change actions have a deadline of 4 days prior, and all cancellation and uncancellation actions have a deadline of 2 days prior.
-3. The user needs to be connected to the campus network.
+2. The user needs to be connected to the campus network.

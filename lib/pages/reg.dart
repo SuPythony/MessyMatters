@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -22,6 +23,9 @@ class _RegState extends State<Reg> {
   final contr = TextEditingController();
   final focusNode = FocusNode();
   late String maxDate;
+  late int regW;
+  late int cancW;
+  late int feedW;
   String? userId;
   final days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
   final messes = ['Yuktahar', 'Palash', 'Kadamba (Veg)', 'Kadmaba (Non-Veg)'];
@@ -249,10 +253,7 @@ class _RegState extends State<Reg> {
         'remarks': remarks,
       }),
     );
-    if (res.statusCode == 403) {
-      Fluttertoast.showToast(msg: 'The feedback window has closed', backgroundColor: Colors.red);
-      Navigator.pop(context);
-    } else if (res.statusCode == 500) {
+    if (res.statusCode == 500) {
       Navigator.pop(context);
       showDialog(
         context: context,
@@ -386,6 +387,15 @@ class _RegState extends State<Reg> {
               showDialog(
                 context: context,
                 builder: (context) {
+                  // Calculating the deadlines
+                  var bef = DateTime.tryParse(
+                    meal['meal_date'],
+                  )!.subtract(Duration(days: regW - 1));
+                  bool regOver = bef.isBefore(DateTime.now());
+                  bef = DateTime.tryParse(meal['meal_date'])!.subtract(Duration(days: cancW - 1));
+                  bool cancelOver = bef.isBefore(DateTime.now());
+                  bef = DateTime.tryParse(meal['meal_date'])!.add(Duration(days: feedW + 1));
+                  bool feedbackOver = !DateTime.now().isBefore(bef);
                   if (meal['availed_at'] != null) {
                     // Can submit feedback
                     if (meal['metadata'] != null && meal['metadata']['feedback'] == true) {
@@ -404,6 +414,22 @@ class _RegState extends State<Reg> {
                             SizedBox(height: 15),
                             Text('Feedback already submitted'),
                           ],
+                        ),
+                        actions: [
+                          TextButton(
+                            onPressed: () {
+                              Navigator.pop(context);
+                            },
+                            child: Text('OK'),
+                          ),
+                        ],
+                      );
+                    }
+                    if (feedbackOver) {
+                      return AlertDialog(
+                        content: Text(
+                          "The feedback window has passed",
+                          style: TextStyle(fontSize: 15),
                         ),
                         actions: [
                           TextButton(
@@ -481,19 +507,6 @@ class _RegState extends State<Reg> {
                       ),
                     );
                   }
-                  // Calculation the registration and cancellation deadlines for the meal
-                  var bef = DateTime.tryParse(meal['meal_date'])!.subtract(Duration(days: 3));
-                  bool regOver =
-                      bef.isBefore(DateTime.now()) ||
-                      DateUtils.isSameDay(DateTime.now(), bef) ||
-                      DateUtils.isSameDay(DateTime.now(), DateTime.tryParse(meal['meal_date'])) ||
-                      DateTime.tryParse(meal['meal_date'])!.isBefore(DateTime.now());
-                  bef = DateTime.tryParse(meal['meal_date'])!.subtract(Duration(days: 1));
-                  bool cancelOver =
-                      bef.isBefore(DateTime.now()) ||
-                      DateUtils.isSameDay(DateTime.now(), bef) ||
-                      DateUtils.isSameDay(DateTime.now(), DateTime.tryParse(meal['meal_date'])) ||
-                      DateTime.tryParse(meal['meal_date'])!.isBefore(DateTime.now());
                   if (meal['cancelled_at'] != null) {
                     // Can uncancel
                     if (cancelOver) {
@@ -842,11 +855,26 @@ class _RegState extends State<Reg> {
     if (DateTime(d!.year, d!.month + 1, 0).isBefore(d)) {
       endDate = DateTime(d!.year, d!.month + 1, 0).toString().split(" ")[0];
     }
-    final res = await http.get(
+    http.Response res = await http.get(
       Uri.parse('https://mess.iiit.ac.in/api/config/registration-max-date'),
       headers: {"Authorization": ?authKey},
     );
     maxDate = jsonDecode(res.body)['data'];
+    res = await http.get(
+      Uri.parse('https://mess.iiit.ac.in/api/config/registration-window'),
+      headers: {"Authorization": ?authKey},
+    );
+    regW = jsonDecode(res.body)['data'] ~/ 86400;
+    res = await http.get(
+      Uri.parse('https://mess.iiit.ac.in/api/config/cancellation-window'),
+      headers: {"Authorization": ?authKey},
+    );
+    cancW = jsonDecode(res.body)['data'] ~/ 86400;
+    res = await http.get(
+      Uri.parse('https://mess.iiit.ac.in/api/config/feedback-window'),
+      headers: {"Authorization": ?authKey},
+    );
+    feedW = jsonDecode(res.body)['data'] ~/ 86400;
     setState(() {
       loading = false;
     });

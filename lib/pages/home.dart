@@ -31,9 +31,8 @@ class _HomeState extends State<Home> {
       [14, 30],
     ],
     'Snacks': [
-      [17, 0],
-      18,
-      0,
+      [16, 45],
+      [18, 15],
     ],
     'Dinner': [
       [19, 30],

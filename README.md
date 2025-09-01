@@ -2,7 +2,7 @@
 
 A client for the IIIT-H mess portal.
 
-Download the [APK](https://drive.google.com/file/d/1gpeqNbMtuQ0kkdofXtbBmdfQ8X-UauDQ/view?usp=sharing)
+Download the [APK](https://drive.google.com/file/d/1yzwqQg-rcHknhTTDIBunSNs7p9K1NtFo/view?usp=sharing)
 
 ## Setup
 

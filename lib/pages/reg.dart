@@ -459,9 +459,19 @@ class _RegState extends State<Reg> {
                     }
                     if (feedbackOver) {
                       return AlertDialog(
-                        content: Text(
-                          "The feedback window has passed",
-                          style: TextStyle(fontSize: 15),
+                        content: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Row(
+                              mainAxisSize: MainAxisSize.min,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(capt(meal['meal_mess']), style: TextStyle(fontSize: 18)),
+                              ],
+                            ),
+                            SizedBox(height: 15),
+                            Text('The feedback window has passed'),
+                          ],
                         ),
                         actions: [
                           TextButton(

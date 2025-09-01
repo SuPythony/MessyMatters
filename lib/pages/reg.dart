@@ -278,6 +278,11 @@ class _RegState extends State<Reg> {
       regs!.sort(comp);
       Navigator.pop(context);
       setState(() {});
+    } else if (res.statusCode == 403) {
+      Fluttertoast.showToast(
+        msg: 'An error occurred: ${jsonDecode(res.body)['error']['message']}',
+        backgroundColor: Colors.red,
+      );
     }
   }
 
@@ -398,6 +403,33 @@ class _RegState extends State<Reg> {
                   bool feedbackOver = !DateTime.now().isBefore(bef);
                   if (meal['availed_at'] != null) {
                     // Can submit feedback
+                    if (meal['availed_at'] == meal['registered_at']) {
+                      // Can't provide feedback for on the spot meal
+                      return AlertDialog(
+                        content: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Row(
+                              mainAxisSize: MainAxisSize.min,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(capt(meal['meal_mess']), style: TextStyle(fontSize: 18)),
+                              ],
+                            ),
+                            SizedBox(height: 15),
+                            Text('On-Spot Registration'),
+                          ],
+                        ),
+                        actions: [
+                          TextButton(
+                            onPressed: () {
+                              Navigator.pop(context);
+                            },
+                            child: Text('OK'),
+                          ),
+                        ],
+                      );
+                    }
                     if (meal['metadata'] != null && meal['metadata']['feedback'] == true) {
                       // Feedback already submitted
                       return AlertDialog(
@@ -442,7 +474,7 @@ class _RegState extends State<Reg> {
                       );
                     }
                     // ask (nag) for feedback
-                    int rating = 0;
+                    int rating = 1;
                     return GestureDetector(
                       onTap: () {
                         focusNode.unfocus();
